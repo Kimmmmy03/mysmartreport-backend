@@ -95,6 +95,7 @@ async def generate_draft_stream(
                     week.topik, week.minggu,
                     nama_kursus=draft.metadata.nama_kursus,
                     program=draft.metadata.program,
+                    detail_level=request.detail_level,
                 )
                 week_dict = week.model_dump()
                 week_dict.update(result)

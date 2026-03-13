@@ -68,6 +68,7 @@ class GenerateDraftRequest(BaseModel):
     kod_kursus: Optional[str] = None
     pensyarah: Optional[str] = None
     weeks: Optional[list[WeekData]] = None
+    detail_level: str = Field("normal", description="AI detail level: 'ringkas', 'normal', or 'terperinci'")
 
 
 class UpdateDraftRequest(BaseModel):

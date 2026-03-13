@@ -120,7 +120,7 @@ def _build_prompt(topik: str, minggu: int) -> str:
     )
 
 
-async def enrich_week(topik: str, minggu: int, nama_kursus: str = "", program: str = "") -> dict:
+async def enrich_week(topik: str, minggu: int, nama_kursus: str = "", program: str = "", detail_level: str = "normal") -> dict:
     """
     Call Gemini API to enrich a single week's content.
     Returns dict with hasil_pembelajaran, strategi_aktiviti, refleksi, refleksi_tutorial, refleksi_epembelajaran.
@@ -148,10 +148,14 @@ async def enrich_week(topik: str, minggu: int, nama_kursus: str = "", program: s
         }
 
     prompt = _build_prompt(effective_topik, minggu)
-    system_prompt = build_system_prompt(nama_kursus, program)
+    system_prompt = build_system_prompt(nama_kursus, program, detail_level)
 
     MAX_RETRIES = 2
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
+    # Adjust token limit based on detail level
+    token_limits = {"ringkas": 4096, "normal": 8192, "terperinci": 12288}
+    max_tokens = token_limits.get(detail_level, 8192)
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -162,7 +166,7 @@ async def enrich_week(topik: str, minggu: int, nama_kursus: str = "", program: s
                 config=genai.types.GenerateContentConfig(
                     system_instruction=system_prompt,
                     temperature=0.5,
-                    max_output_tokens=8192,
+                    max_output_tokens=max_tokens,
                     response_mime_type="application/json",
                 ),
             )
