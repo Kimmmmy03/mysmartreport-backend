@@ -154,7 +154,7 @@ async def enrich_week(topik: str, minggu: int, nama_kursus: str = "", program: s
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
     # Adjust token limit based on detail level
-    token_limits = {"ringkas": 4096, "normal": 8192, "terperinci": 12288}
+    token_limits = {"normal": 4096, "terperinci": 10240}
     max_tokens = token_limits.get(detail_level, 8192)
 
     for attempt in range(1, MAX_RETRIES + 1):

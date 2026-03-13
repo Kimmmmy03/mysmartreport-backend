@@ -47,26 +47,7 @@ def build_system_prompt(nama_kursus: str = "", program: str = "", detail_level: 
         )
 
     # Detail level adjustments
-    if detail_level == "ringkas":
-        hasil_desc = (
-            "1. Hasil pembelajaran - 'Pada akhir sesi ini, pelajar dapat:' "
-            "diikuti i. ii. iii. (3 poin ringkas dan tepat)\n"
-        )
-        strategi_desc = (
-            "2. Strategi P&P - "
-            "'Kuliah' (2-3 aktiviti), 'Tutorial' (2-3 aktiviti), 'E-pembelajaran' (1-2 aktiviti). "
-            "Setiap aktiviti dihuraikan secara ringkas (sekurang-kurangnya 15 patah perkataan).\n"
-        )
-        refleksi_desc = (
-            "3. Refleksi Kuliah - 1 perenggan ringkas (3-4 ayat). "
-            "FOKUS pada aspek TEORITIKAL: konsep teras dan prinsip asas.\n"
-            "4. Refleksi Tutorial - 1 perenggan ringkas (3-4 ayat). "
-            "FOKUS pada aspek PRAKTIKAL: penerapan teori melalui latihan dan perbincangan.\n"
-            "5. Refleksi E-pembelajaran - 1 perenggan ringkas (3-4 ayat). "
-            "FOKUS pada aspek PEMBELAJARAN KENDIRI DIGITAL: penggunaan platform dan pembelajaran autonomi.\n\n"
-        )
-        refleksi_rule = "- Setiap refleksi cukup 1 perenggan ringkas (3-4 ayat)\n"
-    elif detail_level == "terperinci":
+    if detail_level == "terperinci":
         hasil_desc = (
             "1. Hasil pembelajaran - 'Pada akhir sesi ini, pelajar dapat:' "
             "diikuti i. ii. iii. iv. v. vi. vii. (7-8 poin, setiap poin SATU ayat PANJANG dan sangat spesifik)\n"
@@ -95,28 +76,22 @@ def build_system_prompt(nama_kursus: str = "", program: str = "", detail_level: 
     else:  # normal (default)
         hasil_desc = (
             "1. Hasil pembelajaran - 'Pada akhir sesi ini, pelajar dapat:' "
-            "diikuti i. ii. iii. iv. v. (5-6 poin, setiap poin SATU ayat panjang dan spesifik)\n"
+            "diikuti i. ii. iii. iv. (4 poin, setiap poin SATU ayat yang tepat dan spesifik)\n"
         )
         strategi_desc = (
             "2. Strategi P&P - "
-            "'Kuliah' (5-6 aktiviti), 'Tutorial' (4-5 aktiviti), 'E-pembelajaran' (3-4 aktiviti). "
-            "Setiap aktiviti MESTI dihuraikan secara terperinci (sekurang-kurangnya 25 patah perkataan).\n"
+            "'Kuliah' (3-4 aktiviti), 'Tutorial' (3 aktiviti), 'E-pembelajaran' (2-3 aktiviti). "
+            "Setiap aktiviti dihuraikan secara ringkas tetapi jelas (sekurang-kurangnya 15 patah perkataan).\n"
         )
         refleksi_desc = (
-            "3. Refleksi Kuliah - MESTI 1-2 perenggan penuh (minimum 6-7 ayat). "
-            "FOKUS EKSKLUSIF pada aspek TEORITIKAL: konsep teras yang diperkenalkan, prinsip asas, "
-            "penguasaan ilmu, dan bagaimana pengetahuan ini berkaitan dengan bidang subjek yang lebih luas. "
-            "Nyatakan respons pelajar terhadap kaedah penyampaian teori dan cadangan konkrit untuk perkukuhan.\n"
-            "4. Refleksi Tutorial - MESTI 1-2 perenggan penuh (minimum 6-7 ayat). "
-            "FOKUS EKSKLUSIF pada aspek PRAKTIKAL: penerapan teori melalui latihan, aktiviti hands-on, "
-            "perbincangan berkumpulan, dan bagaimana pelajar menggunakan teori kuliah untuk menyelesaikan "
-            "senario praktikal. Nyatakan kualiti penyelesaian masalah, kemahiran kolaboratif, dinamika kumpulan.\n"
-            "5. Refleksi E-pembelajaran - MESTI 1-2 perenggan penuh (minimum 6-7 ayat). "
-            "FOKUS EKSKLUSIF pada aspek PEMBELAJARAN KENDIRI DIGITAL: navigasi platform, pembelajaran bersendiri, "
-            "keberkesanan sumber digital, disiplin diri pelajar, dan pengalaman kefahaman secara autonomi. "
-            "Nyatakan kadar penyertaan dalam talian, kualiti hasil kerja digital, cabaran teknikal.\n\n"
+            "3. Refleksi Kuliah - 1 perenggan (4-5 ayat). "
+            "FOKUS pada aspek TEORITIKAL: konsep teras, prinsip asas, dan respons pelajar.\n"
+            "4. Refleksi Tutorial - 1 perenggan (4-5 ayat). "
+            "FOKUS pada aspek PRAKTIKAL: penerapan teori, perbincangan kumpulan, dan penyelesaian masalah.\n"
+            "5. Refleksi E-pembelajaran - 1 perenggan (4-5 ayat). "
+            "FOKUS pada aspek PEMBELAJARAN KENDIRI DIGITAL: penggunaan platform, pembelajaran autonomi.\n\n"
         )
-        refleksi_rule = "- Setiap refleksi MESTI PANJANG — jangan ringkas atau beri jawapan generik\n"
+        refleksi_rule = "- Setiap refleksi cukup 1 perenggan padat (4-5 ayat). Jangan terlalu panjang.\n"
 
     return (
         f"Anda adalah pembantu AI pakar pendidikan IPG. Bertindak sebagai Dr Yus, pensyarah kanan "
