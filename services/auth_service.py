@@ -2,6 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from firebase_admin import auth, firestore
 from datetime import datetime, timezone
+from config import settings
 
 security = HTTPBearer()
 
@@ -39,13 +40,18 @@ def get_current_user(token_payload: dict = Depends(verify_token)) -> dict:
         data = user_doc.to_dict()
         data["uid"] = uid
 
+        # Override role for configured admin emails
+        email = data.get("email") or token_payload.get("email", "")
+        if email in settings.ADMIN_EMAILS:
+            data["role"] = "admin"
+
         # Process Expiration Boundary
         if data.get("tier") == "premium":
             premium_until = data.get("premium_until")
             if premium_until:
                 if datetime.now(timezone.utc) > premium_until:
                     data["tier"] = "free"
-                    
+
         return data
     except Exception as e:
         # If firestore is not set up correctly yet, permit free access temporarily

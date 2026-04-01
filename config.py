@@ -14,6 +14,10 @@ class Settings:
     TEMPLATE_PATH: str = os.getenv("TEMPLATE_PATH", "templates/template.xlsx")
     SAMPLES_DIR: str = os.getenv("SAMPLES_DIR", "samples")
 
+    ADMIN_EMAILS: list = [
+        "akmalhakimi1150@gmail.com",
+    ]
+
     # Gemini model configuration — using new google-genai SDK
     GEMINI_MODEL: str = "gemini-2.5-flash"
     GEMINI_MAX_CONCURRENT: int = 3
