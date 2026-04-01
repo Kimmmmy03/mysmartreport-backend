@@ -75,6 +75,29 @@ async def sync_admin_roles():
         print(f"Admin sync warning: {e}")
 
 
+@app.post("/api/admin/sync-roles")
+async def force_sync_admin_roles():
+    """Clear all admin roles, then reinject from ADMIN_EMAILS config."""
+    db = admin_firestore.client()
+    cleared = []
+    injected = []
+
+    # Step 1: Clear all existing admins
+    admin_docs = db.collection("users").where("role", "==", "admin").get()
+    for doc in admin_docs:
+        doc.reference.update({"role": "user"})
+        cleared.append(doc.to_dict().get("email", doc.id))
+
+    # Step 2: Reinject from config
+    for email in settings.ADMIN_EMAILS:
+        docs = db.collection("users").where("email", "==", email).limit(1).get()
+        for doc in docs:
+            doc.reference.update({"role": "admin"})
+            injected.append(email)
+
+    return {"cleared": cleared, "injected": injected}
+
+
 @app.get("/")
 async def root():
     return {"message": "MySmartReport API is running", "version": "1.0.0"}
