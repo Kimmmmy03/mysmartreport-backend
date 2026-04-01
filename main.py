@@ -98,6 +98,24 @@ async def force_sync_admin_roles():
     return {"cleared": cleared, "injected": injected}
 
 
+@app.get("/api/debug/users")
+async def debug_all_users():
+    """DEBUG: List all users and their roles/tiers from Firestore."""
+    db = admin_firestore.client()
+    docs = db.collection("users").get()
+    users = []
+    for doc in docs:
+        data = doc.to_dict()
+        users.append({
+            "uid": doc.id,
+            "email": data.get("email"),
+            "role": data.get("role"),
+            "tier": data.get("tier"),
+            "premium_until": str(data.get("premium_until")) if data.get("premium_until") else None,
+        })
+    return {"users": users}
+
+
 @app.get("/")
 async def root():
     return {"message": "MySmartReport API is running", "version": "1.0.0"}
