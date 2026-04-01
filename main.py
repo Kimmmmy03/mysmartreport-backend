@@ -8,7 +8,9 @@ import firebase_admin
 from firebase_admin import credentials
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from firebase_admin import firestore as admin_firestore
 
+from config import settings
 from routes.upload import router as upload_router
 from routes.draft import router as draft_router
 from routes.download import router as download_router
@@ -56,6 +58,21 @@ app.include_router(draft_router, prefix="/api", tags=["Draft"])
 app.include_router(download_router, prefix="/api", tags=["Download"])
 app.include_router(auth_router, prefix="/api", tags=["Auth"])
 app.include_router(admin_router, prefix="/api", tags=["Admin"])
+
+
+@app.on_event("startup")
+async def sync_admin_roles():
+    """Ensure all ADMIN_EMAILS have role='admin' in Firestore."""
+    try:
+        db = admin_firestore.client()
+        for email in settings.ADMIN_EMAILS:
+            docs = db.collection("users").where("email", "==", email).limit(1).get()
+            for doc in docs:
+                if doc.to_dict().get("role") != "admin":
+                    doc.reference.update({"role": "admin"})
+                    print(f"Synced admin role for {email}")
+    except Exception as e:
+        print(f"Admin sync warning: {e}")
 
 
 @app.get("/")
