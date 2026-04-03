@@ -67,12 +67,15 @@ async def generate_draft_stream(
             if week.minggu in tarikh_map:
                 week.tarikh = tarikh_map[week.minggu]
 
-    # Filter weeks to enrich
+    # Filter weeks to enrich (sorted by minggu to ensure sequential processing)
     if request.selected_weeks:
-        weeks_to_enrich = [w for w in draft.weeks if w.minggu in request.selected_weeks]
+        weeks_to_enrich = sorted(
+            [w for w in draft.weeks if w.minggu in request.selected_weeks],
+            key=lambda w: w.minggu,
+        )
         weeks_to_skip = [w for w in draft.weeks if w.minggu not in request.selected_weeks]
     else:
-        weeks_to_enrich = draft.weeks
+        weeks_to_enrich = sorted(draft.weeks, key=lambda w: w.minggu)
         weeks_to_skip = []
 
     total = len(weeks_to_enrich)
