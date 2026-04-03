@@ -465,12 +465,14 @@ def _generate_single_week_buffer(week: WeekData, draft: SessionDraft, group: Gro
     return _fix_xlsx(buffer)
 
 
-def generate_single_excel(draft: SessionDraft, selected_weeks: list[int], input_bytes: bytes | None = None) -> BytesIO:
+def generate_single_excel(draft: SessionDraft, selected_weeks: list[int], input_bytes: bytes | None = None, group: GroupAttendance | None = None) -> BytesIO:
     """
     Generate a single Excel workbook with one sheet per selected week.
     Each sheet is a fresh template copy with data injected.
+    If group is None, defaults to the first group in draft.kumpulan_list.
     """
-    group = draft.kumpulan_list[0] if draft.kumpulan_list else None
+    if group is None:
+        group = draft.kumpulan_list[0] if draft.kumpulan_list else None
     weeks_to_export = sorted(
         [w for w in draft.weeks if w.minggu in selected_weeks],
         key=lambda w: w.minggu,

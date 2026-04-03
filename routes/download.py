@@ -35,10 +35,17 @@ async def download_weeks(request: DownloadRequest):
         if download_format == "xlsx":
             # Single Excel workbook with one sheet per week
             input_bytes = get_input_file(request.session_id) if request.include_input else None
-            excel_buffer = generate_single_excel(draft, request.selected_weeks, input_bytes=input_bytes)
+
+            # Use specific group if group_index provided (for per-group multi-download)
+            group = None
+            if request.group_index is not None and draft.kumpulan_list and request.group_index < len(draft.kumpulan_list):
+                group = draft.kumpulan_list[request.group_index]
+
+            excel_buffer = generate_single_excel(draft, request.selected_weeks, input_bytes=input_bytes, group=group)
             kod = draft.metadata.kod_kursus or "RPP"
             weeks_str = "_".join(str(w) for w in sorted(request.selected_weeks))
-            filename = f"RPP_Mingguan_{kod} - Minggu {weeks_str}.xlsx"
+            group_prefix = f"{group.nama}_" if group else ""
+            filename = f"RPP_Mingguan_{group_prefix}{kod} - Minggu {weeks_str}.xlsx"
 
             return StreamingResponse(
                 excel_buffer,

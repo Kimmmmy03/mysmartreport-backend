@@ -84,3 +84,4 @@ class DownloadRequest(BaseModel):
     selected_weeks: list[int] = Field(..., description="List of week numbers to include")
     format: str = Field("zip", description="Download format: 'xlsx' or 'zip'")
     include_input: bool = Field(False, description="Whether to include the original input file in xlsx output")
+    group_index: Optional[int] = Field(None, description="Specific group index for per-group xlsx download")
