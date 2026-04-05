@@ -93,13 +93,20 @@ async def generate_draft_stream(
                 })
                 yield f"event: progress\ndata: {progress_data}\n\n"
 
-                # Enrich this week
-                result = await enrich_week(
+                # Enrich this week — send keepalive comments every 10s so
+                # Koyeb's proxy doesn't kill the idle SSE connection.
+                enrich_task = asyncio.create_task(enrich_week(
                     week.topik, week.minggu,
                     nama_kursus=draft.metadata.nama_kursus,
                     program=draft.metadata.program,
                     detail_level=request.detail_level,
-                )
+                ))
+                while not enrich_task.done():
+                    done, _ = await asyncio.wait([enrich_task], timeout=10.0)
+                    if not done:
+                        yield ": keepalive\n\n"
+                result = enrich_task.result()
+
                 week_dict = week.model_dump()
                 week_dict.update(result)
                 enriched_weeks.append(WeekData(**week_dict))
