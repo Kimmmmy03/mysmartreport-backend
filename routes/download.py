@@ -5,6 +5,8 @@ POST /api/download — Generate and stream Excel or ZIP files.
 Supports format=xlsx (single Excel with all weeks as sheets) or format=zip (ZIP with subfolders per kumpulan).
 """
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
@@ -41,7 +43,11 @@ async def download_weeks(request: DownloadRequest):
             if request.group_index is not None and draft.kumpulan_list and request.group_index < len(draft.kumpulan_list):
                 group = draft.kumpulan_list[request.group_index]
 
-            excel_buffer = generate_single_excel(draft, request.selected_weeks, input_bytes=input_bytes, group=group)
+            # Run in thread so the event loop stays alive (keeps Koyeb proxy from timing out)
+            excel_buffer = await asyncio.to_thread(
+                generate_single_excel, draft, request.selected_weeks,
+                input_bytes, group
+            )
             kod = draft.metadata.kod_kursus or "RPP"
             weeks_str = "_".join(str(w) for w in sorted(request.selected_weeks))
             group_prefix = f"{group.nama}_" if group else ""
@@ -56,7 +62,10 @@ async def download_weeks(request: DownloadRequest):
             )
         else:
             # ZIP with subfolders
-            zip_buffer = generate_combined_zip(draft, request.selected_weeks)
+            # Run in thread so the event loop stays alive (keeps Koyeb proxy from timing out)
+            zip_buffer = await asyncio.to_thread(
+                generate_combined_zip, draft, request.selected_weeks
+            )
             group_label = draft.kumpulan_list[0].nama if draft.kumpulan_list else "Output"
             num_groups = len(draft.kumpulan_list) if draft.kumpulan_list else 1
             filename = f"RPP_Mingguan_{group_label}{'_dan_lain' if num_groups > 1 else ''}.zip"
